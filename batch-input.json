@@ -1,0 +1,24 @@
+{
+	karmaHome : "/home/chetan/Desktop/dr/Web-Karma/" ,
+	modelsDir : "/home/chetan/Desktop/dr-division/division-page-data/model" ,
+	filesDir : "/home/chetan/Desktop/dr-division/division-page-data/data" ,
+	rdfDir : "/home/chetan/Desktop/dr-division/division-page-data/RDF" ,
+	baseHttpDirURL : "https://raw.github.com/chetanme/division-page-data/master/data/" ,
+	runAsCron : false ,
+	cronTimeInMin : 0 ,
+	endpoint : "http://localhost:8080/openrdf-sesame/repositories/division-page" ,
+	clearEndpoint : false ,
+	filesAndModels : [
+		{
+			file : "organization.csv" , model : "WSP1WS1-organization.csv-model.ttl"
+		}
+		, 
+		{
+			file : "people.csv" , model : "WSP1WS1-people.csv-model.ttl"
+		}
+		,
+		{
+			file : "position.xlsx" , model : "WSP1WS457-position_Sheet1-model.ttl"
+		}
+	]
+}
