@@ -5,7 +5,7 @@
 	rdfDir : "/home/chetan/Desktop/dr-division/division-page-data/RDF" ,
 	baseHttpDirURL : "https://raw.github.com/chetanme/division-page-data/master/data/" ,
 	runAsCron : false ,
-	cronTimeInMin : 0 ,
+	cronTimeInMin : 10 ,
 	endpoint : "http://localhost:8080/openrdf-sesame/repositories/division-page" ,
 	clearEndpoint : false ,
 	filesAndModels : [
@@ -18,7 +18,7 @@
 		}
 		,
 		{
-			file : "position.xlsx" , model : "WSP1WS457-position_Sheet1-model.ttl"
+			file : "position.csv" , model : "WSP1WS1-position.csv-model.ttl"
 		}
 	]
 }

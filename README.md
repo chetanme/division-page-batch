@@ -10,7 +10,7 @@ You need to have [Node.js](http://nodejs.org/) installed. Then download `divisio
 
 ### Usage
 
-Typical invocation: `node karma-batch.js <spec-file>` OR `node karma-batch.js --cron <spec-file>`
+Typical invocation: `node karma-batch.js <spec-file>`
 
 Type `node karma-batch.js -h` to see the available options.
 
@@ -22,29 +22,30 @@ You can optionally post the generated RDF files to a SPARQL endpoint.
 
 ```
 {
-	karmaHome : "/Users/szekely/Web-Karma/" ,
-	modelsDir : "/Users/szekely/github/division-page-data/models" ,
-	filesDir : "/Users/szekely/github/division-page-data/datasets" ,
-	rdfDir : "/Users/szekely/github/division-page-data/rdf" ,
+	karmaHome : "/home/chetan/Desktop/dr/Web-Karma/" ,
+	modelsDir : "/home/chetan/Desktop/dr-division/division-page-data/model" ,
+	filesDir : "/home/chetan/Desktop/dr-division/division-page-data/data" ,
+	rdfDir : "/home/chetan/Desktop/dr-division/division-page-data/RDF" ,
 	baseHttpDirURL : "https://raw.github.com/chetanme/division-page-data/master/data/" ,
 	runAsCron : false ,
-	cronTimeInMin : 0 ,
-	endpoint : "http://localhost:8080/openrdf-sesame/repositories/karma_data" ,
+	cronTimeInMin : 10 ,
+	endpoint : "http://localhost:8080/openrdf-sesame/repositories/division-page" ,
 	clearEndpoint : false ,
 	filesAndModels : [
 		{
-			file : "events.json" , model : "events-model.txt"
+			file : "organization.csv" , model : "WSP1WS1-organization.csv-model.ttl"
 		}
 		, 
 		{
-			file : "people.json" , model : "people-model.txt"
+			file : "people.csv" , model : "WSP1WS1-people.csv-model.ttl"
 		}
 		,
 		{
-			file : "schedule.csv" , model : "schedule-model.txt"
+			file : "position.csv" , model : "WSP1WS1-position.csv-model.ttl"
 		}
 	]
 }
+
 ```
 
 ### Caveats
