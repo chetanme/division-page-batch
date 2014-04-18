@@ -6,7 +6,7 @@ A Node.js library script to easily invoke Karma in batch mode.
 
 You need to have [Node.js](http://nodejs.org/) installed. Then download `division-page-batch` and execute the following command in the directory where you cloned this repository. You need to do this to download additional packages.
 
-`npm install date-format-lite sys exec-sync shred optimist request async cron time`
+`npm install date-format-lite sys exec-sync shred optimist request async cron time gith`
 
 ### Usage
 
@@ -22,28 +22,32 @@ You can optionally post the generated RDF files to a SPARQL endpoint.
 
 ```
 {
-	karmaHome : "/home/chetan/Desktop/dr/Web-Karma/" ,
-	modelsDir : "/home/chetan/Desktop/dr-division/division-page-data/model" ,
-	filesDir : "/home/chetan/Desktop/dr-division/division-page-data/data" ,
-	rdfDir : "/home/chetan/Desktop/dr-division/division-page-data/RDF" ,
-	baseHttpDirURL : "https://raw.github.com/chetanme/division-page-data/master/data/" ,
+	karmaHome : "/home2/chetan/Web-Karma/" ,
+	modelsDir : "/home2/chetan/division-page-data/model" ,
+	filesDir : "/home2/chetan/division-page-data" ,
+	rdfDir : "/home2/chetan/division-page-data/RDF" ,
+	baseHttpDirURL : "https://raw.github.com/chetanme/division-page-data/master/" ,
 	runAsCron : false ,
-	cronTimeInMin : 10 ,
+	cronTimeInMin : 15 ,
 	endpoint : "http://localhost:8080/openrdf-sesame/repositories/division-page" ,
 	clearEndpoint : false ,
 	filesAndModels : [
 		{
-			file : "organization.csv" , model : "WSP1WS1-organization.csv-model.ttl"
+			file : "data/organization.csv" , model : "WSP1WS1-organization.csv-model.ttl"
 		}
 		, 
 		{
-			file : "people.csv" , model : "WSP1WS1-people.csv-model.ttl"
+			file : "data/people.csv" , model : "WSP1WS1-people.csv-model.ttl"
 		}
 		,
 		{
-			file : "position.csv" , model : "WSP1WS1-position.csv-model.ttl"
+			file : "data/position.csv" , model : "WSP1WS1-position.csv-model.ttl"
 		}
-	]
+	],
+	useWebhookFlow : true,
+	webhookRepoName : "chetanme/division-page-data",
+	webhookBranchName : "master",
+	webhookFileName : /data\/(\w+).csv/
 }
 
 ```
