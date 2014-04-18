@@ -74,12 +74,12 @@ function runOfflineRdfGenerator(spec, isWebhookFlow, modifiedFilesMap) {
 	}
 
 	spec.filesAndModels.map(function(record) {
-		console.log("record:"+record.file);
+		//console.log("record:"+record.file);
 
 		var downloadFile = true;
 		if (isWebhookFlow && (modifiedFilesMap[record.file] == null || modifiedFilesMap[record.file] != 1)) {
 			downloadFile = false;
-        	}
+        }
 
 		var runGenerator = false;
 		async.series([
@@ -98,21 +98,20 @@ function runOfflineRdfGenerator(spec, isWebhookFlow, modifiedFilesMap) {
 			}, function (callback) {
 				if (!isWebhookFlow) {
 					var stats = fs.statSync(spec.filesDir + '/' + record.file + '');
-	                                var tStats = fs.statSync(spec.filesDir + '/' + record.file + '-temp');
+                    var tStats = fs.statSync(spec.filesDir + '/' + record.file + '-temp');
 
-        	                        tStats["size"] += 1;
+                    tStats["size"] += 1;
 
-                	                if (stats["size"] != tStats["size"]) {
-                        	                fs.renameSync(spec.filesDir + '/' + record.file + '-temp', spec.filesDir + '/' + record.file + '');
-                                	        runGenerator = true;
-	                                } else {
-        	                                fs.delete(spec.filesDir + '/' + record.file + '-temp');
-                	                }
+	                if (stats["size"] != tStats["size"]) {
+        	                fs.renameSync(spec.filesDir + '/' + record.file + '-temp', spec.filesDir + '/' + record.file + '');
+                	        runGenerator = true;
+                    } else {
+                            fs.delete(spec.filesDir + '/' + record.file + '-temp');
+	                }
 				}
 				callback();
 			}, function (callback) {
 				if (isWebhookFlow || runGenerator) {
-					console.log("HERE");
 					runOfflineRdfGeneratorOnce(record, spec);
 				} else {
 					console.log("Rdf Generation not required for " + record.file);
