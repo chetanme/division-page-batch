@@ -7,7 +7,7 @@
 	runAsCron : false ,
 	cronTimeInMin : 15 ,
 	endpoint : "http://localhost:8080/openrdf-sesame/repositories/division-page" ,
-	clearEndpoint : false ,
+	clearEndpoint : true ,
 	filesAndModels : [
 		{
 			file : "data/organization.csv" , model : "WSP1WS1-organization.csv-model.ttl"

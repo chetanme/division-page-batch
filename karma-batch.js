@@ -76,20 +76,25 @@ function runOfflineRdfGenerator(spec, isWebhookFlow, modifiedFilesMap) {
 	spec.filesAndModels.map(function(record) {
 		console.log("record:"+record.file);
 
+		var downloadFile = true;
 		if (isWebhookFlow && (modifiedFilesMap[record.file] == null || modifiedFilesMap[record.file] != 1)) {
-			return 1;
+			downloadFile = false;
         	}
 
 		var runGenerator = false;
 		async.series([
 			function (callback) {
-				var req = request(spec.baseHttpDirURL + record.file)
+				if (downloadFile) {
+					var req = request(spec.baseHttpDirURL + record.file)
 
-	                        req.pipe(fs.createWriteStream(spec.filesDir + '/' + record.file + ((!isWebhookFlow) ? '-temp' : '')));
+		                        req.pipe(fs.createWriteStream(spec.filesDir + '/' + record.file + ((!isWebhookFlow) ? '-temp' : '')));
 
-                                req.on ("end", function() {
+	                                req.on ("end", function() {
+						callback();
+					});
+				} else {
 					callback();
-				});
+				}
 			}, function (callback) {
 				if (!isWebhookFlow) {
 					var stats = fs.statSync(spec.filesDir + '/' + record.file + '');
@@ -107,6 +112,7 @@ function runOfflineRdfGenerator(spec, isWebhookFlow, modifiedFilesMap) {
 				callback();
 			}, function (callback) {
 				if (isWebhookFlow || runGenerator) {
+					console.log("HERE");
 					runOfflineRdfGeneratorOnce(record, spec);
 				} else {
 					console.log("Rdf Generation not required for " + record.file);
@@ -182,7 +188,6 @@ if (spec.useWebhookFlow) {
 	  branch: spec.webhookBranchName,
 	  file: spec.webhookFileName
 	}).on('file:modify', function( payload ) {
-	  console.log( 'Post-receive happened!' );
 	  modifiedFilesMap = {};
 	  for (var i = 0; i < payload["files"]["modified"].length; i++) {
 	    console.log(payload["files"]["modified"][i]);
