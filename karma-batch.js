@@ -169,10 +169,22 @@ function clearEndpoint(spec) {
 // Do it
 //runOfflineRdfGenerator(spec);
 
-if (spec.runAsCron) {
-	new cronJob(spec.cronTimeInMin + " * * * * *", function() {
-		runOfflineRdfGenerator(spec);		
-	}, null, true, "America/Los_Angeles");
+if (spec.useWebhookFlow) {
+	var gith = require('gith').create(3002);
+	gith({
+	  repo: spec.webhookRepoName,
+	  branch: spec.webhookBranchName,
+	  file: spec.webhookFileName
+	}).on('file:modify', function( payload ) {
+	  console.log( 'Post-receive happened!' );
+	  console.log(payload);
+	});
 } else {
-	runOfflineRdfGenerator(spec);
+	if (spec.runAsCron) {
+		new cronJob(spec.cronTimeInMin + " * * * * *", function() {
+			runOfflineRdfGenerator(spec);		
+		}, null, true, "America/Los_Angeles");
+	} else {
+		runOfflineRdfGenerator(spec);
+	}
 }

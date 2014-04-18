@@ -3,22 +3,26 @@
 	modelsDir : "/home/chetan/Desktop/dr-division/division-page-data/model" ,
 	filesDir : "/home/chetan/Desktop/dr-division/division-page-data/data" ,
 	rdfDir : "/home/chetan/Desktop/dr-division/division-page-data/RDF" ,
-	baseHttpDirURL : "https://raw.github.com/chetanme/division-page-data/master/data/" ,
+	baseHttpDirURL : "https://raw.github.com/chetanme/division-page-data/master/" ,
 	runAsCron : false ,
 	cronTimeInMin : 10 ,
 	endpoint : "http://localhost:8080/openrdf-sesame/repositories/division-page" ,
 	clearEndpoint : false ,
 	filesAndModels : [
 		{
-			file : "organization.csv" , model : "WSP1WS1-organization.csv-model.ttl"
+			file : "data/organization.csv" , model : "WSP1WS1-organization.csv-model.ttl"
 		}
 		, 
 		{
-			file : "people.csv" , model : "WSP1WS1-people.csv-model.ttl"
+			file : "data/people.csv" , model : "WSP1WS1-people.csv-model.ttl"
 		}
 		,
 		{
-			file : "position.csv" , model : "WSP1WS1-position.csv-model.ttl"
+			file : "data/position.csv" , model : "WSP1WS1-position.csv-model.ttl"
 		}
-	]
+	],
+	useWebhookFlow : true,
+	webhookRepoName : "chetanme/division-page-data",
+	webhookBranchName : "master",
+	webhookFileName : "/data\/(\w+).csv/",
 }
