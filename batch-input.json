@@ -1,8 +1,8 @@
 {
-	karmaHome : "/home2/chetan/Web-Karma/" ,
-	modelsDir : "/home2/chetan/division-page-data/model" ,
-	filesDir : "/home2/chetan/division-page-data" ,
-	rdfDir : "/home2/chetan/division-page-data/RDF" ,
+	karmaHome : "/opt/isd/Web-Karma/" ,
+	modelsDir : "/opt/isd/division-page-data/model" ,
+	filesDir : "/opt/isd/division-page-data" ,
+	rdfDir : "/opt/isd/division-page-data/RDF" ,
 	baseHttpDirURL : "https://raw.github.com/chetanme/division-page-data/master/" ,
 	runAsCron : false ,
 	cronTimeInMin : 15 ,
@@ -24,5 +24,5 @@
 	useWebhookFlow : true,
 	webhookRepoName : "chetanme/division-page-data",
 	webhookBranchName : "master",
-	webhookFileName : /data\/(\w+).csv/
+	webhookFileName : /data\/(\w+).csv/,
 }

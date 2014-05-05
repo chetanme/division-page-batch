@@ -57,7 +57,7 @@ function getRdfFile(record, spec) {
 
 function runOfflineRdfGeneratorOnce(record, spec) {
 	var cmd =
-		'mvn exec:java -Dexec.mainClass="edu.isi.karma.rdf.OfflineRdfGenerator" -Dexec.args="'
+		'/opt/isd/apache-maven-3.2.1/bin/mvn exec:java -Dexec.mainClass="edu.isi.karma.rdf.OfflineRdfGenerator" -Dexec.args="'
 		+ ' --sourcetype ' + getSourceType(record)
 		+ ' --filepath ' + spec.filesDir + '/' + record.file + ''
 		+ ' --modelfilepath ' + spec.modelsDir + '/' + record.model + ''
@@ -74,12 +74,12 @@ function runOfflineRdfGenerator(spec, isWebhookFlow, modifiedFilesMap) {
 	}
 
 	spec.filesAndModels.map(function(record) {
-		//console.log("record:"+record.file);
+		console.log("record:"+record.file);
 
 		var downloadFile = true;
 		if (isWebhookFlow && (modifiedFilesMap[record.file] == null || modifiedFilesMap[record.file] != 1)) {
 			downloadFile = false;
-        }
+        	}
 
 		var runGenerator = false;
 		async.series([
@@ -98,16 +98,16 @@ function runOfflineRdfGenerator(spec, isWebhookFlow, modifiedFilesMap) {
 			}, function (callback) {
 				if (!isWebhookFlow) {
 					var stats = fs.statSync(spec.filesDir + '/' + record.file + '');
-                    var tStats = fs.statSync(spec.filesDir + '/' + record.file + '-temp');
+	                                var tStats = fs.statSync(spec.filesDir + '/' + record.file + '-temp');
 
-                    tStats["size"] += 1;
+        	                        tStats["size"] += 1;
 
-	                if (stats["size"] != tStats["size"]) {
-        	                fs.renameSync(spec.filesDir + '/' + record.file + '-temp', spec.filesDir + '/' + record.file + '');
-                	        runGenerator = true;
-                    } else {
-                            fs.delete(spec.filesDir + '/' + record.file + '-temp');
-	                }
+                	                if (stats["size"] != tStats["size"]) {
+                        	                fs.renameSync(spec.filesDir + '/' + record.file + '-temp', spec.filesDir + '/' + record.file + '');
+                                	        runGenerator = true;
+	                                } else {
+        	                                fs.delete(spec.filesDir + '/' + record.file + '-temp');
+                	                }
 				}
 				callback();
 			}, function (callback) {
@@ -161,20 +161,40 @@ function clearEndpoint(spec) {
 	var shred = new Shred();
 	console.log("clearing: "+spec.endpoint);
 	var req = shred.delete({
-    url: spec.endpoint+'/statements',
-    on: {
-      // You can use response codes as events
-      204: function(response) {
-      	console.log("response for clearing "+spec.endpoint);
-      	console.log("... success (204)");
-      	//console.log(response.content.body);
-      },
-      // Any other response means something's wrong
-      response: function(response) {
-        console.log("Oh no!");
-      }
-    }
-  });
+    		url: spec.endpoint+'/statements',
+    		on: {
+      			// You can use response codes as events
+			204: function(response) {
+			      	console.log("response for clearing "+spec.endpoint);
+			      	console.log("... success (204)");
+			      	//console.log(response.content.body);
+
+				var encodedquerystring = encodeURIComponent("PREFIX nao: <http://www.semanticdesktop.org/ontologies/nao> INSERT DATA {<http://example/resource> nao:lastModified 'Friday,4-25-2014'}");
+				console.log(spec.endpoint + '?query=' + encodedquerystring);
+				var insertReq = shred.post({
+					url: spec.endpoint,
+					content: "update=" + encodedquerystring,
+					headers: {
+    						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					on: {
+							204: function(response) {
+								console.log("Got response");
+								console.log(response);
+							},
+							response: function(response) {
+								console.log("Error");
+								console.log(response);
+							}
+					}
+				});
+			},
+		       // Any other response means something's wrong
+		       response: function(response) {
+			       console.log("Oh no!");
+		       }
+		}
+	});
 }
 
 // Do it
