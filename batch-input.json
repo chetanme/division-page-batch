@@ -20,6 +20,10 @@
 		{
 			file : "data/position.csv" , model : "WSP1WS1-position.csv-model.ttl"
 		}
+		,
+		{
+			file : "data/lastUpdateDate.json" , model : "WSP1WS1-date.json-model.ttl"
+		}
 	],
 	useWebhookFlow : true,
 	webhookRepoName : "chetanme/division-page-data",

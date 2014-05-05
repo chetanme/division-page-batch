@@ -73,57 +73,69 @@ function runOfflineRdfGenerator(spec, isWebhookFlow, modifiedFilesMap) {
 		clearEndpoint(spec);
 	}
 
-	spec.filesAndModels.map(function(record) {
-		console.log("record:"+record.file);
+	var lastUpdateDateData = {lastUpdateDate: (new Date()).toString().split(" ").splice(1, 4).join(" ")};
 
-		var downloadFile = true;
-		if (isWebhookFlow && (modifiedFilesMap[record.file] == null || modifiedFilesMap[record.file] != 1)) {
-			downloadFile = false;
-        	}
+	var outputFilename = 'data/lastUpdateDate.json';
 
-		var runGenerator = false;
-		async.series([
-			function (callback) {
-				if (downloadFile) {
-					var req = request(spec.baseHttpDirURL + record.file)
+	fs.writeFile(spec.filesDir + '/' + outputFilename, JSON.stringify(lastUpdateDateData, null, 4), function(err) {
+	    if (err) {
+			console.log(err);
+	    } else {
+			console.log("Date JSON saved to " + spec.filesDir + '/' + outputFilename);
+	    }
 
-		                        req.pipe(fs.createWriteStream(spec.filesDir + '/' + record.file + ((!isWebhookFlow) ? '-temp' : '')));
+	    spec.filesAndModels.map(function(record) {
+			console.log("record:"+record.file);
 
-	                                req.on ("end", function() {
+			var downloadFile = true;
+			if (isWebhookFlow && (modifiedFilesMap[record.file] == null || modifiedFilesMap[record.file] != 1)) {
+				downloadFile = false;
+	    	}
+
+			var runGenerator = false;
+			async.series([
+				function (callback) {
+					if (downloadFile && record.file != "data/lastUpdateDate.json") {
+						var req = request(spec.baseHttpDirURL + record.file)
+	                    req.pipe(fs.createWriteStream(spec.filesDir + '/' + record.file + ((!isWebhookFlow) ? '-temp' : '')));
+	                    req.on ("end", function() {
+							callback();
+						});
+					} else {
 						callback();
-					});
-				} else {
+					}
+				}, function (callback) {
+					if (!isWebhookFlow && record.file != "data/lastUpdateDate.json") {
+						var stats = fs.statSync(spec.filesDir + '/' + record.file + '');
+	                    var tStats = fs.statSync(spec.filesDir + '/' + record.file + '-temp');
+
+	                    tStats["size"] += 1;
+
+		                if (stats["size"] != tStats["size"]) {
+	        	                fs.renameSync(spec.filesDir + '/' + record.file + '-temp', spec.filesDir + '/' + record.file + '');
+	                	        runGenerator = true;
+	                    } else {
+	                            fs.delete(spec.filesDir + '/' + record.file + '-temp');
+		                }
+					} else if (record.file == "data/lastUpdateDate.json") {
+						runGenerator = true;
+					}
 					callback();
+				}, function (callback) {
+					if (isWebhookFlow || runGenerator) {
+						runOfflineRdfGeneratorOnce(record, spec);
+					} else {
+						console.log("Rdf Generation not required for " + record.file);
+					}
+					callback();
+				}, function () {
+					if (spec.endpoint && !argv.noTripleStoreLoad) {
+						console.log('Loading data to ' + spec.endpoint);
+						postRdfToEndpointOnce(record, spec);
+					}
 				}
-			}, function (callback) {
-				if (!isWebhookFlow) {
-					var stats = fs.statSync(spec.filesDir + '/' + record.file + '');
-	                                var tStats = fs.statSync(spec.filesDir + '/' + record.file + '-temp');
-
-        	                        tStats["size"] += 1;
-
-                	                if (stats["size"] != tStats["size"]) {
-                        	                fs.renameSync(spec.filesDir + '/' + record.file + '-temp', spec.filesDir + '/' + record.file + '');
-                                	        runGenerator = true;
-	                                } else {
-        	                                fs.delete(spec.filesDir + '/' + record.file + '-temp');
-                	                }
-				}
-				callback();
-			}, function (callback) {
-				if (isWebhookFlow || runGenerator) {
-					runOfflineRdfGeneratorOnce(record, spec);
-				} else {
-					console.log("Rdf Generation not required for " + record.file);
-				}
-				callback();
-			}, function () {
-				if (spec.endpoint && !argv.noTripleStoreLoad) {
-					console.log('Loading data to ' + spec.endpoint);
-					postRdfToEndpointOnce(record, spec);
-				}
-			}
-		]);
+			]);
+		});
 	});
 }
 
@@ -168,31 +180,11 @@ function clearEndpoint(spec) {
 			      	console.log("response for clearing "+spec.endpoint);
 			      	console.log("... success (204)");
 			      	//console.log(response.content.body);
-
-				var encodedquerystring = encodeURIComponent("PREFIX nao: <http://www.semanticdesktop.org/ontologies/nao> INSERT DATA {<http://example/resource> nao:lastModified 'Friday,4-25-2014'}");
-				console.log(spec.endpoint + '?query=' + encodedquerystring);
-				var insertReq = shred.post({
-					url: spec.endpoint,
-					content: "update=" + encodedquerystring,
-					headers: {
-    						"Content-Type": "application/x-www-form-urlencoded"
-					},
-					on: {
-							204: function(response) {
-								console.log("Got response");
-								console.log(response);
-							},
-							response: function(response) {
-								console.log("Error");
-								console.log(response);
-							}
-					}
-				});
 			},
-		       // Any other response means something's wrong
-		       response: function(response) {
-			       console.log("Oh no!");
-		       }
+	        // Any other response means something's wrong
+	        response: function(response) {
+		    	console.log("Oh no!");
+	        }
 		}
 	});
 }
